@@ -1,0 +1,241 @@
+:root {
+  --primary: #4f46e5; /* Indigo */
+  --primary-hover: #4338ca;
+  --bg-main: #f8fafc;
+  --text-dark: #1e293b;
+  --text-light: #64748b;
+  --success: #10b981; /* Emerald */
+  --danger: #f43f5e; /* Rose */
+  --white: #ffffff;
+  --border: #e2e8f0;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-dark);
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+  margin: 0;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 550px;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05),
+    0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  padding: 40px;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+}
+
+h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-dark);
+}
+.app-header p {
+  color: var(--text-light);
+  margin-top: 5px;
+  font-size: 0.9rem;
+}
+
+.status-pill {
+  background: #eef2ff;
+  color: var(--primary);
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Input Area */
+.input-wrapper {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+#taskInput {
+  flex: 1;
+  padding: 14px 20px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.2s;
+  outline: none;
+}
+
+#taskInput:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+}
+
+#addBtn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#addBtn:hover {
+  background: var(--primary-hover);
+}
+
+/* Task Items */
+.task-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  background: var(--bg-main);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+}
+
+.task-item:hover {
+  border-color: var(--border);
+  transform: translateY(-2px);
+  background: var(--white);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.check-btn {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  margin-right: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.check-btn.completed {
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.task-title {
+  flex: 1;
+  font-weight: 500;
+  font-size: 1rem;
+}
+.task-title.completed {
+  color: var(--text-light);
+  text-decoration: line-through;
+}
+
+.delete-icon {
+  color: var(--text-light);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.delete-icon:hover {
+  color: var(--danger);
+  background: #fff1f2;
+}
+
+.hidden {
+  display: none;
+}
+
+.edit-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid var(--primary);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+.edit-btn {
+  color: var(--primary);
+  font-size: 0.85rem;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.edit-btn:hover {
+  background: #eef2ff;
+}
+
+.actions {
+  display: flex;
+  gap: 5px;
+}
+
+/* Category Select Styling */
+.category-select {
+  padding: 10px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: white;
+  outline: none;
+  color: var(--text-dark);
+}
+
+/* Category Tags */
+.tag {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-right: 10px;
+  letter-spacing: 0.5px;
+}
+
+.tag-work {
+  background: #dbeafe;
+  color: #1e40af;
+} /* Blue */
+.tag-personal {
+  background: #f3f4f6;
+  color: #374151;
+} /* Gray */
+.tag-urgent {
+  background: #fee2e2;
+  color: #991b1b;
+} /* Red */
+
+.task-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.date-text {
+  font-size: 0.7rem;
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+.task-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Space between the tag/date row and the title */
+}
