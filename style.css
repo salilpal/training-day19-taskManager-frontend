@@ -239,3 +239,25 @@ h1 {
   flex-direction: column;
   gap: 4px; /* Space between the tag/date row and the title */
 }
+
+#authSection {
+  max-width: 400px;
+  margin-top: 100px;
+}
+
+#authSection input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+}
+
+#authSection input:focus {
+  border-color: var(--primary);
+}
+
+.hidden {
+  display: none !important;
+}

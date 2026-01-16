@@ -1,5 +1,80 @@
-const API_URL = "https://training-day19-taskmanager-backend.onrender.com/tasks";
+const API_BASE = "https://training-day19-taskmanager-backend.onrender.com";
+const API_URL = `${API_BASE}/tasks`;
+const AUTH_URL = `${API_BASE}/auth`;
 
+let isLoginMode = true;
+
+// 1. AXIOS CONFIGURATION (Attaches JWT Token to every request)
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers["x-auth-token"] = token;
+  }
+  return config;
+});
+
+// 2. AUTHENTICATION LOGIC
+function toggleAuthMode() {
+  isLoginMode = !isLoginMode;
+  document.getElementById("authTitle").innerText = isLoginMode
+    ? "Sign In"
+    : "Sign Up";
+  document.getElementById("authBtn").innerText = isLoginMode
+    ? "Sign In"
+    : "Sign Up";
+  document.getElementById("authToggleText").innerText = isLoginMode
+    ? "Don't have an account?"
+    : "Already have an account?";
+  document.getElementById("authToggleLink").innerText = isLoginMode
+    ? "Sign Up"
+    : "Sign In";
+}
+
+async function handleAuth() {
+  const username = document.getElementById("usernameAuth").value;
+  const password = document.getElementById("passwordAuth").value;
+  const endpoint = isLoginMode ? "signin" : "signup";
+
+  try {
+    const res = await axios.post(`${AUTH_URL}/${endpoint}`, {
+      username,
+      password,
+    });
+    if (isLoginMode) {
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("username", res.data.username);
+      initApp();
+    } else {
+      alert("Account created! Please Sign In.");
+      toggleAuthMode();
+    }
+  } catch (e) {
+    alert(e.response?.data?.msg || "Authentication failed");
+  }
+}
+
+function logout() {
+  localStorage.clear();
+  location.reload();
+}
+
+// 3. APP INITIALIZATION
+function initApp() {
+  const token = localStorage.getItem("token");
+  if (token) {
+    document.getElementById("authSection").classList.add("hidden");
+    document.getElementById("mainContent").classList.remove("hidden");
+    document.getElementById(
+      "welcomeUser"
+    ).innerText = `Hi, ${localStorage.getItem("username")}`;
+    loadTasks();
+  } else {
+    document.getElementById("authSection").classList.remove("hidden");
+    document.getElementById("mainContent").classList.add("hidden");
+  }
+}
+
+// 4. TASK MANAGEMENT (Modified to handle 401 Unauthorized)
 async function loadTasks() {
   try {
     const { data } = await axios.get(API_URL);
@@ -9,12 +84,9 @@ async function loadTasks() {
 
     list.innerHTML = "";
     count.innerText = `${data.length} Tasks`;
-
-    // Toggle empty state visibility
     if (empty) empty.classList.toggle("hidden", data.length > 0);
 
     data.forEach((task) => {
-      // 1. Setup variables
       const tagClass = `tag-${task.category.toLowerCase()}`;
       const dateOptions = {
         month: "short",
@@ -27,41 +99,36 @@ async function loadTasks() {
         dateOptions
       );
 
-      // 2. Create the element
       const div = document.createElement("div");
       div.className = "task-item";
       div.id = `task-${task._id}`;
-
-      // 3. Set the HTML content
       div.innerHTML = `
-        <div class="check-btn ${task.completed ? "completed" : ""}" 
-             onclick="toggleTask('${task._id}', ${task.completed})">
-             ${task.completed ? "✓" : ""}
-        </div>
-        <div class="task-content">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span class="tag ${tagClass}">${task.category}</span>
-                <span class="date-text">${formattedDate}</span>
-            </div>
-            <span class="task-title ${task.completed ? "completed" : ""}">
-                ${task.title}
-            </span>
-        </div>
-        <div class="actions">
-            <div class="edit-btn" onclick="enterEditMode('${
-              task._id
-            }', '${task.title.replace(/'/g, "\\'")}')">Edit</div>
-            <div class="delete-icon" onclick="deleteTask('${
-              task._id
-            }')">Delete</div>
-        </div>
-      `;
-
-      // 4. Append to list
+                <div class="check-btn ${
+                  task.completed ? "completed" : ""
+                }" onclick="toggleTask('${task._id}', ${task.completed})">
+                     ${task.completed ? "✓" : ""}
+                </div>
+                <div class="task-content">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span class="tag ${tagClass}">${task.category}</span>
+                        <span class="date-text">${formattedDate}</span>
+                    </div>
+                    <span class="task-title ${
+                      task.completed ? "completed" : ""
+                    }">${task.title}</span>
+                </div>
+                <div class="actions">
+                    <div class="edit-btn" onclick="enterEditMode('${
+                      task._id
+                    }', '${task.title.replace(/'/g, "\\'")}')">Edit</div>
+                    <div class="delete-icon" onclick="deleteTask('${
+                      task._id
+                    }')">Delete</div>
+                </div>`;
       list.appendChild(div);
     });
   } catch (e) {
-    console.error("Failed to load tasks:", e);
+    if (e.response?.status === 401) logout(); // Token expired or invalid
   }
 }
 
@@ -135,4 +202,4 @@ document.getElementById("taskInput").addEventListener("keypress", (e) => {
   if (e.key === "Enter") addTask();
 });
 
-loadTasks();
+initApp();
