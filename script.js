@@ -4,7 +4,6 @@ const AUTH_URL = `${API_BASE}/auth`;
 
 let isLoginMode = true;
 
-// 1. AXIOS CONFIGURATION (Attaches JWT Token to every request)
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -13,7 +12,6 @@ axios.interceptors.request.use((config) => {
   return config;
 });
 
-// 2. AUTHENTICATION LOGIC
 function toggleAuthMode() {
   isLoginMode = !isLoginMode;
   document.getElementById("authTitle").innerText = isLoginMode
@@ -58,23 +56,25 @@ function logout() {
   location.reload();
 }
 
-// 3. APP INITIALIZATION
 function initApp() {
   const token = localStorage.getItem("token");
-  if (token) {
+  const user = localStorage.getItem("username");
+
+  if (token && token !== "undefined" && token !== "null") {
     document.getElementById("authSection").classList.add("hidden");
     document.getElementById("mainContent").classList.remove("hidden");
-    document.getElementById(
-      "welcomeUser"
-    ).innerText = `Hi, ${localStorage.getItem("username")}`;
+
+    const welcomeEl = document.getElementById("welcomeUser");
+    if (welcomeEl) welcomeEl.innerText = `Hi, ${user || "User"}`;
+
     loadTasks();
   } else {
+    localStorage.clear();
     document.getElementById("authSection").classList.remove("hidden");
     document.getElementById("mainContent").classList.add("hidden");
   }
 }
 
-// 4. TASK MANAGEMENT (Modified to handle 401 Unauthorized)
 async function loadTasks() {
   try {
     const { data } = await axios.get(API_URL);
@@ -128,7 +128,7 @@ async function loadTasks() {
       list.appendChild(div);
     });
   } catch (e) {
-    if (e.response?.status === 401) logout(); // Token expired or invalid
+    if (e.response?.status === 401) logout();
   }
 }
 
@@ -161,7 +161,6 @@ function enterEditMode(id, oldTitle) {
     `;
   const input = document.getElementById(`input-${id}`);
   input.focus();
-  // Allow saving with Enter key
   input.addEventListener("keypress", (e) => {
     if (e.key === "Enter") saveEdit(id);
   });
@@ -173,7 +172,7 @@ async function saveEdit(id) {
 
   try {
     await axios.put(`${API_URL}/${id}`, { title: newTitle });
-    loadTasks(); // Refresh list
+    loadTasks();
   } catch (e) {
     console.error("Update failed", e);
   }
@@ -197,7 +196,6 @@ async function deleteTask(id) {
   }
 }
 
-// Allow pressing 'Enter' to add
 document.getElementById("taskInput").addEventListener("keypress", (e) => {
   if (e.key === "Enter") addTask();
 });
